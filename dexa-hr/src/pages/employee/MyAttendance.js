@@ -165,7 +165,7 @@ const MyAttendance = () => {
                             <p className="text-gray-600 mb-4">{error}</p>
                             <Button 
                                 label="Try Again" 
-                                variant="primary" 
+                                variant="red-button" 
                                 onClick={fetchData}
                             />
                         </div>

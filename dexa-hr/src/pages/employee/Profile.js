@@ -91,9 +91,6 @@ const Profile = () => {
         }
     };
 
-    const handleReset = () => {
-        setFormData(data || {});
-    };
 
     const closeModal = () => {
         setShowModal(false);

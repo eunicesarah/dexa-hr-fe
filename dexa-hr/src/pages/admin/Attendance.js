@@ -329,7 +329,7 @@ const AttendanceAdmin = () => {
                             <p className="text-gray-600 mb-4">{error}</p>
                             <Button 
                                 label="Try Again" 
-                                variant="primary" 
+                                variant="red-button" 
                                 onClick={fetchData}
                             />
                         </div>
@@ -362,7 +362,7 @@ const AttendanceAdmin = () => {
 
                             <Button 
                                 label="Clear Filters" 
-                                variant="secondary" 
+                                variant="add" 
                                 onClick={() => {
                                     setSearchTerm('');
                                     setDateFilter('');

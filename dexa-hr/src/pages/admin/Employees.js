@@ -199,7 +199,7 @@ const Employees = () => {
                             <p className="text-gray-600 mb-4">{error}</p>
                             <Button 
                                 label="Try Again" 
-                                variant="primary" 
+                                variant="red-button" 
                                 onClick={fetchData}
                             />
                         </div>
@@ -216,7 +216,7 @@ const Employees = () => {
                             <p className="text-gray-600 mb-4">Get started by adding your first employee.</p>
                             <Button 
                                 label="Add Employee" 
-                                variant="primary" 
+                                variant="red-button" 
                                 onClick={handleAddEmployee}
                             />
                         </div>
@@ -237,7 +237,7 @@ const Employees = () => {
 
                             <Button 
                                 label="Clear Filters" 
-                                variant="secondary" 
+                                variant="add" 
                                 onClick={() => {
                                     setSearchTerm('');
                                     setFilterDepartment('');
