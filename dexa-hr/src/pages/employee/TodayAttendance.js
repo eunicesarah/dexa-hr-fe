@@ -80,7 +80,7 @@ const TodayAttendance = () => {
     if (isChecking) {
         return (
             <div className="flex flex-row">
-                <Navbar role={"user"} />
+                <Navbar role="EMPLOYEE" />
                 <div className="flex flex-col w-full px-12 py-10 gap-6">
                     <div className="flex justify-center items-center h-64">
                         <div className="text-xl">Checking attendance status...</div>
@@ -92,7 +92,7 @@ const TodayAttendance = () => {
 
     return (
         <div className="flex flex-row min-h-screen bg-gray-50">
-            <Navbar role={"user"} />
+            <Navbar role="EMPLOYEE" />
             <div className="flex flex-col w-full px-8 py-6">
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <div className="flex justify-between items-center">

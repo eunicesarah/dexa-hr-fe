@@ -161,7 +161,7 @@ const AttendanceAdmin = () => {
 
     return (
         <div className="flex flex-row min-h-screen bg-gray-50">
-            <Navbar role="ADMIN" />
+            <Navbar/>
             <div className="flex flex-col w-full px-8 py-6">
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

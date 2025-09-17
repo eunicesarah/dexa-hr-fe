@@ -84,5 +84,21 @@ export const AdminEmployee = {
         } catch (error) {
             throw error;
         }
+    },
+    setEmployeeAsAdmin: async (id, role) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+            const response = await apiClient.put(`/users/role/${id}`, { role }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 }

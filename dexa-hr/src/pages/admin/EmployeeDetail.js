@@ -183,6 +183,23 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
         }
     };
 
+    const handleSetAdmin = async () => {
+        setIsSaving(true);
+        try {
+            await AdminEmployee.setEmployeeAsAdmin(employeeId, 'ADMIN');
+            setModalTitle('Success');
+            setModalMessage('Employee has been set as Admin successfully!');
+            setShowModal(true);
+        } catch (error) {
+            console.error("Error setting employee as admin:", error);
+            setModalTitle('Error');
+            setModalMessage('Failed to set employee as Admin. Please try again.');
+            setShowModal(true);
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
     return (
         <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-sm py-12">
             <div className="bg-gradient-to-r from-red to-yellow text-white p-6 rounded-t-lg">
@@ -454,7 +471,13 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                         </div>
                         {
                             isEditMode && (
-                                <div className="space-y-2 w-fit justify-self-end">
+                                <div className="w-full justify-self-end flex flex-col md:flex-row gap-16">
+                                    <Button
+                                        label="Set as Admin"
+                                        onClick={handleSetAdmin}
+                                        variant="add"
+                                        disabled={isSaving}
+                                    />
                                     <Button
                                         label="Delete Employee"
                                         onClick={handleDelete}

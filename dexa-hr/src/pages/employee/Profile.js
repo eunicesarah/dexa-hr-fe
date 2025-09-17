@@ -108,7 +108,7 @@ const Profile = () => {
     if (isLoading && !data) {
         return (
             <div className="flex flex-row">
-                <Navbar role="user" />
+                <Navbar/>
                 <div className="flex flex-col w-full px-12 py-10 gap-6">
                     <div className="flex justify-center items-center h-64">
                         <div className="text-xl">Loading...</div>
@@ -120,7 +120,7 @@ const Profile = () => {
 
     return (
         <div className="flex flex-row">
-            <Navbar role="user" />
+            <Navbar />
             <div className="flex flex-col w-full px-12 py-10 gap-6">
                 <div className="bg-gradient-to-r from-red to-yellow text-white p-6 rounded-t-lg flex flex-row justify-between items-center">
                     <h1 className="text-2xl font-bold">My Profile</h1>

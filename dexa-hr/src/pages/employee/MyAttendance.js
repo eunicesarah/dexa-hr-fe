@@ -59,7 +59,7 @@ const MyAttendance = () => {
 
     return (
         <div className="flex flex-row min-h-screen bg-gray-50">
-            <Navbar role={"user"} />
+            <Navbar />
             <div className="flex flex-col w-full px-8 py-6">
                 {/* Header Section */}
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
