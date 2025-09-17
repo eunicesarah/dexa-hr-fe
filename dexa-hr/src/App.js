@@ -24,41 +24,41 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/attendance" element={
-            <ProtectedAuthorization role="ADMIN">
+            <ProtectedAuthorization roles={["ADMIN", "ADMIN EMPLOYEE"]}>
               <AttendanceAdmin />
             </ProtectedAuthorization>
           } />
           <Route path="/employee" element={
-            <ProtectedAuthorization role="ADMIN">
+            <ProtectedAuthorization roles={["ADMIN", "ADMIN EMPLOYEE"]}>
               <Employees />
             </ProtectedAuthorization>
           } />
           <Route path="/employee/edit/:id" element={
-            <ProtectedAuthorization role="ADMIN">
+            <ProtectedAuthorization roles={["ADMIN", "EMPLOYEE", "ADMIN EMPLOYEE"]}>
               <EmployeeDetailWrapper />
             </ProtectedAuthorization>
           } />
           <Route path="/add" element={
-            <ProtectedAuthorization role="ADMIN">
+            <ProtectedAuthorization roles={["ADMIN", "ADMIN EMPLOYEE"]}>
               <EmployeeDetail mode="add"/>
             </ProtectedAuthorization>
           } />
-
           <Route path="/my-attendance" element={
-            <ProtectedAuthorization role="EMPLOYEE">
+            <ProtectedAuthorization roles={["EMPLOYEE", "ADMIN", "ADMIN EMPLOYEE"]}>
               <MyAttendance />
             </ProtectedAuthorization>
           } />
           <Route path="/today-attendance" element={
-            <ProtectedAuthorization role="EMPLOYEE">
+            <ProtectedAuthorization roles={["EMPLOYEE", "ADMIN", "ADMIN EMPLOYEE"]}>
               <TodayAttendance />
             </ProtectedAuthorization>
           } />
-           <Route path="/profile" element={
-            <ProtectedAuthorization role="EMPLOYEE">
+          <Route path="/profile" element={
+            <ProtectedAuthorization roles={["EMPLOYEE", "ADMIN", "ADMIN EMPLOYEE"]}>
               <Profile />
             </ProtectedAuthorization>
           } />
+          
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
