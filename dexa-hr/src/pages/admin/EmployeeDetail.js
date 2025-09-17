@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import { useNavigate } from 'react-router-dom';
 
 const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) => {
+    const TODAY = new Date();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
         salary: '',
         start_date: '',
         end_date: '',
-        status: '1'
+        is_active: 1
     });
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
@@ -35,6 +36,10 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
             setIsLoading(true);
             try {
                 const employee = await AdminEmployee.getEmployeeById(employeeId);
+                employee.birth_date = convertFetchedDate(employee.birth_date);
+                employee.start_date = convertFetchedDate(employee.start_date);
+                employee.end_date = employee.end_date ? convertFetchedDate(employee.end_date) : '';
+                console.info(employee);
                 setFormData(employee);
             } catch (error) {
                 console.error("Error fetching employee details:", error);
@@ -55,12 +60,24 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
         if (!formData.department?.trim()) newErrors.department = 'Department is required';
         if (!formData.position?.trim()) newErrors.position = 'Position is required';
         if (!formData.start_date) newErrors.start_date = 'Start date is required';
-        
+        if (!formData.address?.trim()) newErrors.address = 'Address is required';
         if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Please enter a valid email address';
         }
+        if (!formData.birth_date || new Date(formData.birth_date) > new Date()) {
+            newErrors.birth_date = 'Please enter a valid birth date';
+        }
+
+        if (formData.end_date && new Date(formData.end_date) < new Date(formData.start_date)) {
+            newErrors.start_date = 'Start date cannot be after end date';
+            newErrors.end_date = 'End date cannot be before start date';
+        }
         
-        if (formData.phone_number && !/^\+?[\d\s\-\(\)]+$/.test(formData.phone_number)) {
+        if (!formData.salary || isNaN(formData.salary) || Number(formData.salary) < 0) {
+            newErrors.salary = 'Please enter a valid non-negative salary';
+        }
+        
+        if (!formData.phone_number || !/^\+?[\d\s\-\(\)]+$/.test(formData.phone_number)) {
             newErrors.phone_number = 'Please enter a valid phone number';
         }
 
@@ -88,6 +105,15 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
         return date.toISOString().split('T')[0];
     };
 
+    const convertFetchedDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const formatDateForAPI = (dateString) => {
         if (!dateString) return null;
         if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -109,10 +135,11 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
         try {
             const formattedData = {
                 ...formData,
+                salary: parseFloat(formData.salary),
                 birth_date: formatDateForAPI(formData.birth_date),
                 start_date: formatDateForAPI(formData.start_date),
                 end_date: formData.end_date ? formatDateForAPI(formData.end_date) : null,
-                is_active: formData.status === '1' || formData.status === 1 ? 1 : 0
+                is_active: formData.is_active === '1' || formData.is_active === 1 ? 1 : 0
             };
 
             let result;
@@ -320,7 +347,8 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red">*</span>
+                                </label>
                                 <input 
                                     type="tel" 
                                     value={formData.phone_number || ''} 
@@ -336,31 +364,42 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Birth Date</label>
+                                <label className="block text-sm font-medium text-gray-700">Birth Date <span className="text-red">*</span>
+                                </label>
                                 <input 
                                     type="date" 
-                                    value={convertToDate(formData.birth_date) || ''} 
+                                    max={TODAY.toISOString().split('T')[0]}
+                                    value={formData.birth_date || ''} 
                                     onChange={(e) => handleInputChange('birth_date', e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200
+                                        ${errors.birth_date ? 'border-red bg-red-50' : 'border-gray-300'}`}
                                     disabled={isSaving}
                                 />
+                                {errors.birth_date && (
+                                    <p className="text-red text-xs mt-1">{errors.birth_date}</p>
+                                )}
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Address</label>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Address <span className="text-red">*</span>
+                            </label>
                             <textarea 
-                                value={formData.address || ''} 
+                                value={formData.address || ''}
                                 onChange={(e) => handleInputChange('address', e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200
+                                    ${errors.address ? 'border-red bg-red-50' : 'border-gray-300'}`}
                                 placeholder="Enter full address"
                                 rows={3}
                                 disabled={isSaving}
                             />
+                            {errors.address && (
+                                <p className="text-red text-xs mt-1">{errors.address}</p>
+                            )}
                         </div>
                     </div>
 
-                    {/* Work Information Section */}
                     <div className="space-y-6">
                         <div className="border-b border-gray-200 pb-4">
                             <h2 className="text-lg font-semibold text-gray-800 flex items-center">
@@ -410,20 +449,26 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Salary</label>
+                         <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Salary <span className="text-red">*</span>
+                            </label>
                             <div className="relative">
                                 <span className="absolute left-3 top-3 text-gray-500">IDR</span>
                                 <input 
-                                    type="text" 
-                                    value={formData.salary || ''} 
+                                    type="text"
+                                    value={formData.salary} 
                                     onChange={(e) => handleInputChange('salary', e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200
+                                        ${errors.salary ? 'border-red bg-red-50' : 'border-gray-300'}`}
                                     placeholder="0.00"
                                     min="0"
                                     step="0.01"
                                     disabled={isSaving}
                                 />
+                                {errors.salary && (
+                                    <p className="text-red text-xs mt-1">{errors.salary}</p>
+                                )}
                             </div>
                         </div>
 
@@ -434,7 +479,8 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                                 </label>
                                 <input 
                                     type="date" 
-                                    value={convertToDate(formData.start_date) || ''} 
+                                    max={formData.end_date ? convertToDate(formData.end_date) : undefined}
+                                    value={formData.start_date || ''} 
                                     onChange={(e) => handleInputChange('start_date', e.target.value)}
                                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                                         errors.start_date ? 'border-red bg-red-50' : 'border-gray-300'
@@ -449,7 +495,8 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                                 <label className="block text-sm font-medium text-gray-700">End Date</label>
                                 <input 
                                     type="date" 
-                                    value={convertToDate(formData.end_date) || ''} 
+                                    min={convertToDate(formData.start_date) || undefined}
+                                    value={formData.end_date || ''} 
                                     onChange={(e) => handleInputChange('end_date', e.target.value)}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                     disabled={isSaving}
@@ -465,8 +512,8 @@ const EmployeeDetail = ({ employeeId = null, mode = 'add', onSave, onCancel }) =
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                 disabled={isSaving}
                             >
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
+                                <option value={1}>Active</option>
+                                <option value={0}>Inactive</option>
                             </select>
                         </div>
                         {
